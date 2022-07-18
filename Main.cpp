@@ -55,7 +55,10 @@ Texture chapter1BG;
 Texture chapter1BG2;
 Texture chapter1BG3;
 Texture chapter1BG4;
+Texture chapter1BG5;
+Texture chapter1BG6;
 Texture dialogBox;
+bool hideDialogBox = false;
 
 //Script Textures
 Texture scriptTexture[TOTAL_PAGES][TOTAL_SCRIPTS];
@@ -453,6 +456,14 @@ bool loadMedia()
 	{
 		printf( "Failed to load chapter 1 Background 4 Screen texture!\n" );
 		success = false;
+	}if( !chapter1BG5.loadFromFile( "images/biblioteca.png",renderer ) )
+	{
+		printf( "Failed to load chapter 1 Background 5 Screen texture!\n" );
+		success = false;
+	}if( !chapter1BG6.loadFromFile( "images/America2.png",renderer ) )
+	{
+		printf( "Failed to load chapter 1 Background 6 Screen texture!\n" );
+		success = false;
 	}
 
 	if( !dialogBox.loadFromFile( "images/dialogbox1.png",renderer ) )
@@ -575,6 +586,8 @@ for(int i=0;i<TAO_ANIMATION_FRAMES;i++){
 	chapter1BG2.free();
 	chapter1BG3.free();
 	chapter1BG4.free();
+	chapter1BG5.free();
+	chapter1BG6.free();
 	dialogBox.free();
 
 	//Free the sound effects
@@ -628,6 +641,7 @@ int main( int argc, char* args[] )
 
 			//Main loop flag
 			bool quit = false;
+
 
 			/*for( int i = 0; i < TOTAL_PARTICLES; ++i )
         {
@@ -798,6 +812,17 @@ int main( int argc, char* args[] )
 							Mix_PlayChannel( -1, gScratch, 0 );
 							break;
 
+							case SDLK_h:
+							if(hideDialogBox == false){
+                                hideDialogBox = true;
+							}
+							else{
+                                hideDialogBox = false;
+							}
+							printf("\n h pressed \n");
+                            std::cout << "hideDialogBox: " << hideDialogBox;
+							break;
+
 							case SDLK_9:
 							//If there is no music playing
 							if( Mix_PlayingMusic() == 0 )
@@ -902,19 +927,24 @@ int main( int argc, char* args[] )
                     //Chapter 1
                     for(int j = 0; j<TOTAL_PAGES;j++){
                         //render background & dialog box before script lines
-                        switch(currentPage %4){
+                        switch(currentPage %6){
                             case 0:chapter1BG.render(0,0,NULL,0.0,NULL,SDL_FLIP_NONE,renderer);
-                                    dialogBox.render(0,400,NULL,0.0,NULL,SDL_FLIP_NONE,renderer);
                                     break;
                             case 1:chapter1BG2.render(0,0,NULL,0.0,NULL,SDL_FLIP_NONE,renderer);
-                                    dialogBox.render(0,400,NULL,0.0,NULL,SDL_FLIP_NONE,renderer);
                                     break;
                             case 2:chapter1BG3.render(0,0,NULL,0.0,NULL,SDL_FLIP_NONE,renderer);
-                                    dialogBox.render(0,400,NULL,0.0,NULL,SDL_FLIP_NONE,renderer);
                                     break;
                             case 3:chapter1BG4.render(0,0,NULL,0.0,NULL,SDL_FLIP_NONE,renderer);
-                                    dialogBox.render(0,400,NULL,0.0,NULL,SDL_FLIP_NONE,renderer);
                                     break;
+                            case 4:chapter1BG5.render(0,0,NULL,0.0,NULL,SDL_FLIP_NONE,renderer);
+                                    break;
+                            case 5:chapter1BG6.render(0,0,NULL,0.0,NULL,SDL_FLIP_NONE,renderer);
+                                    break;
+
+                        }
+                        if(hideDialogBox == false){
+                            dialogBox.render(0,400,NULL,0.0,NULL,SDL_FLIP_NONE,renderer);
+
                         }
                         for(int i = 0; i<TOTAL_SCRIPTS;i++){
                             //render script lines
