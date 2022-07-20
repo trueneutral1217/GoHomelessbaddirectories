@@ -8,13 +8,14 @@
 #include "Texture.h"
 #include "timer.h"
 #include "particle.h"
+#include "chapter.h"
 
 //Particle count
 const int TOTAL_PARTICLES = 200;
 //number of dialog lines
-const int TOTAL_SCRIPTS = 8;
+//const int TOTAL_SCRIPTS = 8;
 //number of dialog pages
-const int TOTAL_PAGES = 8;
+//const int TOTAL_PAGES = 8;
 
 const int TOTAL_DATA = 3;
 //Screen dimension constants
@@ -34,6 +35,8 @@ bool init();
 
 //Loads media
 bool loadMedia();
+
+Texture scriptTexture[TOTAL_PAGES][TOTAL_SCRIPTS];
 
 //Frees media and shuts down SDL
 void close();
@@ -61,7 +64,7 @@ Texture dialogBox;
 bool hideDialogBox = false;
 
 //Script Textures
-Texture scriptTexture[TOTAL_PAGES][TOTAL_SCRIPTS];
+//Texture scriptTexture[TOTAL_PAGES][TOTAL_SCRIPTS];
 
 //The music that will be played
 Mix_Music *music = NULL;
@@ -88,12 +91,15 @@ Texture tao[TAO_ANIMATION_FRAMES];
 //file read/write stuff
 Sint32 gData[ TOTAL_DATA ];
 SDL_RWops* file = SDL_RWFromFile( "savegame/save.gsf", "r+b" );
+//tracks page/chapter/dialog
 int chapter1complete;
 int currentPage;
 int currentScript;
 
 //particle objects
 Particle particles[ TOTAL_PARTICLES ];
+
+chapter chapter1;
 
 void renderParticles();
 
@@ -186,9 +192,10 @@ bool init()
 	return success;
 }
 
+
+
 bool loadMedia()
 {
-	//Loading success flag
 	bool success = true;
 
 	buttons[0].buttonName="back";
@@ -198,84 +205,7 @@ bool loadMedia()
 	buttons[4].buttonName="credits";
 	buttons[5].buttonName="chapter1";
 
-//chapter 1, page 1
-	scriptTexture[0][0].scriptString.str( "5 years ago, I stopped working regular jobs." );
-	scriptTexture[0][1].scriptString.str("Since then I've mostly begged for money on the street corner");
-	scriptTexture[0][2].scriptString.str("with cardboard signs that say things like 'Anything Helps'.");
-    scriptTexture[0][3].scriptString.str("I stopped working because I noticed a few major problems with");
-    scriptTexture[0][4].scriptString.str("our socio-economic system.  self-driving cars were commercially viable,");
-    scriptTexture[0][5].scriptString.str("but the state of California red-taped self driving cars. It made sense");
-    scriptTexture[0][6].scriptString.str("why... it would greatly affect the need for labor in the workforce.");
-    scriptTexture[0][7].scriptString.str("                                Press LMB or Enter to continue...");
-//chapter 1, page 2
-    scriptTexture[1][0].scriptString.str("If the car is driving, the person behind the wheel [but why tf");
-    scriptTexture[1][1].scriptString.str("would there be a wheel?] can't be held liable, which makes the car driving");
-    scriptTexture[1][2].scriptString.str("system responsible, but their cars drive better than humans, so that");
-    scriptTexture[1][3].scriptString.str("won't be much of a problem.  They would probably insure their own");
-    scriptTexture[1][4].scriptString.str("cars, which would reduce auto insurance agents.  Besides that, ");
-    scriptTexture[1][5].scriptString.str("it's hard to find probable cause when the car is driving, which");
-    scriptTexture[1][6].scriptString.str("reduces the need for police on the streets.");
-    scriptTexture[1][7].scriptString.str("                                Press LMB or Enter to continue...");
-//chapter 1, page 3
-    scriptTexture[2][0].scriptString.str("when self-driving cars are freely allowed, the need for cars drops.");
-    scriptTexture[2][1].scriptString.str("One car can be used by an entire family by summoning it as needed");
-    scriptTexture[2][2].scriptString.str("when not in active use.  But mainly, drivers would lose jobs, taxi");
-    scriptTexture[2][3].scriptString.str("drivers, gig-economy transportation drivers, and big-rig truckers.");
-    scriptTexture[2][4].scriptString.str("Self-driving cars would require a black box like airplanes for liability");
-    scriptTexture[2][5].scriptString.str("as well as bug fixes.  The goal is 100% safety on the road. 30,000");
-    scriptTexture[2][6].scriptString.str("automobile deaths yearly would be greatly reduced by self driving cars.");
-    scriptTexture[2][7].scriptString.str("                                Press LMB or Enter to continue...");
-
-//chapter 1, page 4
-    scriptTexture[3][0].scriptString.str("The only problem with changing over to large scale automation in areas");
-    scriptTexture[3][1].scriptString.str("like driving is the job problem.  The only way to deal with a job market");
-    scriptTexture[3][2].scriptString.str("that is smaller than the labor force is to implement Universal Basic Income.");
-    scriptTexture[3][3].scriptString.str("Universal Basic Income is the idea that everyone, no matter their employment");
-    scriptTexture[3][4].scriptString.str("status receives a certain amount of money.  debtors can not garnish it, and");
-    scriptTexture[3][5].scriptString.str("you still receive it if you are working...  ");
-    scriptTexture[3][6].scriptString.str("My mission is Universal basic income.");
-    scriptTexture[3][7].scriptString.str("                                Press LMB or Enter to continue...");
-
-//chapter 1, page 5
-    scriptTexture[4][0].scriptString.str("You may be asking yourself: Won't people lose the incentive ");
-    scriptTexture[4][1].scriptString.str("to work if they receive UBI?  and yes, they will.  Millions of");
-    scriptTexture[4][2].scriptString.str("Americans are working minimum wage jobs that don't provide a ");
-    scriptTexture[4][3].scriptString.str("living wage.  The companies that provide these jobs fight against");
-    scriptTexture[4][4].scriptString.str("worker's rights, because nothing is more important to them than");
-    scriptTexture[4][5].scriptString.str("the bottom line.  In my last job I was working in a call center for");
-    scriptTexture[4][6].scriptString.str("a big telecom company.  bedbugs and mandatory overtime for all.");
-    scriptTexture[4][7].scriptString.str("                                Press LMB or Enter to continue...");
-//chapter 1, page 6
-    scriptTexture[5][0].scriptString.str("Since that job I've worked for myself mostly. Besides begging on");
-    scriptTexture[5][1].scriptString.str("street corners, I have knitted several scarves although I never made");
-    scriptTexture[5][2].scriptString.str("any money on them, only gave them away, except one that a friend");
-    scriptTexture[5][3].scriptString.str("tried on and walked off with... sigh.  I've painted a lot of paintings");
-    scriptTexture[5][4].scriptString.str("and sold a few of them.  acrylic + canvas.  I'm an avid gamer and");
-    scriptTexture[5][5].scriptString.str("since I'm basically retired, I play a lot of pc/android games.");
-    scriptTexture[5][6].scriptString.str("I have a bachelor's degree in computer science, so I'm programming this.");
-    scriptTexture[5][7].scriptString.str("                                Press LMB or Enter to continue...");
-
-    scriptTexture[6][0].scriptString.str("If universal basic income is instated, the ultra rich know that");
-    scriptTexture[6][1].scriptString.str("eventually we will move toward income equality across the planet.");
-    scriptTexture[6][2].scriptString.str("That means people will be doing what they want to instead of what");
-    scriptTexture[6][3].scriptString.str("they must.  Since my last job I've been doing my part in keeping");
-    scriptTexture[6][4].scriptString.str("the demand for labor up by not working.  I want a future where");
-    scriptTexture[6][5].scriptString.str("employers don't low-ball new employees on wages, and perhaps we");
-    scriptTexture[6][6].scriptString.str("can return to a time where employers search for employees.");
-    scriptTexture[6][7].scriptString.str("                                Press LMB or Enter to continue...");
-
-    scriptTexture[7][0].scriptString.str("I grew up playing PC and console videogames.  I knew I wanted");
-    scriptTexture[7][1].scriptString.str("to make videogames.  It's why I got into computer science.");
-    scriptTexture[7][2].scriptString.str("unfortunately the market for game developers is too competitive,");
-    scriptTexture[7][3].scriptString.str("so I'm making this game independently in my spare time, with zero");
-    scriptTexture[7][4].scriptString.str("budget. The jobs in the computer science field are cut-throat and");
-    scriptTexture[7][5].scriptString.str("don't actually pay as much as I thought they would. I'm done making");
-    scriptTexture[7][6].scriptString.str("online surveys for market research.");
-    scriptTexture[7][7].scriptString.str("                                Press LMB or Enter to continue...");
-
-	//scriptTexture[0].scriptString="5 years ago, I stopped working regular jobs.";
-	//scriptTexture[1].scriptString="Since then I've mostly begged for money on the street corner with cardboard signs that say things like 'Anything Helps'.";
-    //std::cout << "button name: " << gButtons[0].buttonName;
+	//success = chapter1.loadStrings();
 
     if( file == NULL )
     {
@@ -319,14 +249,6 @@ bool loadMedia()
 
         SDL_RWclose( file );
     }
-    //Initialize data textures
-   // gDataTextures[ 0 ].loadFromRenderedText( std::to_string( gData[ 0 ] ), highlightColor );
-    /*for( int i = 0; i < TOTAL_DATA; ++i )
-    {
-        //printf( std::to_string( gData[ i ] ) );
-        std::cout << "\n gamesave item: " << std::to_string( gData[ i ] );
-        //gDataTextures[ i ].loadFromRenderedText( std::to_string( gData[ i ] ), textColor );
-    }*/
 
     std::cout << "\n chapter1complete: " << std::to_string( gData[ 0 ] );
     std::cout << "\n currentPage: " << std::to_string( gData[ 1 ] );
@@ -522,7 +444,7 @@ bool loadMedia()
         SDL_Color textColor = { 55, 55, 55 };
         for(int j=0;j<TOTAL_PAGES;j++){
             for(int i=0;i<TOTAL_SCRIPTS;i++){
-                if( !scriptTexture[j][i].loadFromRenderedText( scriptTexture[j][i].scriptString.str().c_str(), textColor,font, renderer ) )
+                if( !scriptTexture[j][i].loadFromRenderedText( chapter1.scriptString[j][i].str().c_str(), textColor,font, renderer ) )
                 {
                     printf( "Failed to render text texture!\n" );
                     success = false;
@@ -550,6 +472,12 @@ void close()
         gData[1] = currentPage;
         gData[2] = currentScript;
 
+        std::cout << "\n chapter1complete: " << std::to_string( gData[ 0 ] );
+        std::cout << "\n currentPage: " << std::to_string( gData[ 1 ] );
+        std::cout << "\n currentScript: " << std::to_string( gData[ 2 ] );
+
+
+
         for( int i = 0; i < TOTAL_DATA; ++i )
         {
             SDL_RWwrite( file, &gData[ i ], sizeof(Sint32), 1 );
@@ -571,6 +499,7 @@ void close()
 for(int j = 0; j < TOTAL_PAGES; j++){
     for(int i=0;i<TOTAL_SCRIPTS;i++){
         scriptTexture[j][i].free();
+
     }
 }
 for(int i=0;i<TAO_ANIMATION_FRAMES;i++){
@@ -664,9 +593,6 @@ int main( int argc, char* args[] )
             chapter1Timer.start();
             timer animationTimer;
             animationTimer.start();
-			//page tracker
-			//int currentPage = 0;
-			//int currentScript = 0;
 
 			//Frame of animation
 			int aniFrame = 0;
@@ -700,43 +626,70 @@ int main( int argc, char* args[] )
                     if(e.type == SDL_MOUSEBUTTONDOWN){
                         if(gameState == 5)
                         {
-                            if (currentScript<TOTAL_SCRIPTS-1)
+                            if(currentPage==7 && currentScript==7){
+                                    currentPage=0;
+                                    currentScript=0;
+                                    gameState=2;
+                                    chapter1complete=1;
+                                    chapter1Timer.stop();
+                                    std::cout << "\n chapter1complete: " << std::to_string( chapter1complete );
+                                    std::cout << "\n currentPage: " << std::to_string( currentPage );
+                                    std::cout << "\n currentScript: " << std::to_string( currentScript );
+                            }
+                            if (currentScript<TOTAL_SCRIPTS-1 && !buttons[0].clicked)
                             {
-                                currentScript+=1;
+                                currentScript++;
                                 chapter1Timer.stop();
                                 chapter1Timer.start();
+                                printf("\n \n line 633 under total scripts:");
+                                std::cout << "\n chapter1complete: " << std::to_string( chapter1complete );
+                                std::cout << "\n currentPage: " << std::to_string( currentPage );
+                                std::cout << "\n currentScript: " << std::to_string( currentScript );
                             }
                             else
                             {
-                                if(currentPage<TOTAL_PAGES-1)
-                                {
-                                    currentPage+=1;
-                                    currentScript=0;
-                                    chapter1Timer.stop();
-                                    chapter1Timer.start();
+                                //player didn't click back button
+                                if(!buttons[0].clicked){
+
+                                    if(currentPage<TOTAL_PAGES-1)
+                                    {
+                                        currentPage++;
+                                        currentScript=0;
+                                        printf("\n \n line 643 under total pages");
+                                        std::cout << "\n chapter1complete: " << std::to_string( chapter1complete );
+                                        std::cout << "\n currentPage: " << std::to_string( currentPage );
+                                        std::cout << "\n currentScript: " << std::to_string( currentScript );
+                                        chapter1Timer.stop();
+                                        chapter1Timer.start();
+                                    }
                                 }
                                 else
                                 {
                                     //currentPage=0;
                                     printf(" end of chapter 1 dialog return to game state = 0 \n");
-                                    gameState = 0;
-                                    chapter1complete=1;
+                                    currentScript--;
+                                    gameState = 1;
+                                    chapter1Timer.stop();
+                                    std::cout << "\n chapter1complete: " << std::to_string( chapter1complete );
+                                    std::cout << "\n currentPage: " << std::to_string( currentPage );
+                                    std::cout << "\n currentScript: " << std::to_string( currentScript );
+                                    //chapter1complete=1;
                                 }
+
 
                             }
                         }
-                        if(gameState == 1)//chapter select
+                        if(gameState == 1)//new game chapter select
                         {
-                            //chapter1Timer.stop();
-                            //chapter1Timer.start();
+
                             currentPage = 0;
                             currentScript = 0;
                             chapter1complete = 0;
                             chapter1Timer.stop();
                             chapter1Timer.start();
                         }
-                        if(gameState == 2){
-                            currentScript-=1;
+                        if(gameState == 2){//load game chapter select
+                            //currentScript--;
                             chapter1Timer.stop();
                             chapter1Timer.start();
                         }
@@ -760,13 +713,12 @@ int main( int argc, char* args[] )
 
                             case SDLK_SPACE:
                                 if(gameState == 5){
-                                    //chapter1Timer.stop();
-                                    //chapter1Timer.start();
+
 
 
                                     if(currentScript<TOTAL_SCRIPTS-1)
                                     {
-                                        currentScript+=1;
+                                        currentScript++;
                                         chapter1Timer.stop();
                                         chapter1Timer.start();
                                     }
@@ -774,7 +726,7 @@ int main( int argc, char* args[] )
                                     {
                                         if(currentPage<TOTAL_PAGES-1)
                                         {
-                                            currentPage+=1;
+                                            currentPage++;
                                             currentScript=0;
                                             chapter1Timer.stop();
                                             chapter1Timer.start();
@@ -783,7 +735,7 @@ int main( int argc, char* args[] )
                                         {
                                             //currentPage=0;
                                             printf("end of chapter 1 dialog return to game state = 0 \n");
-                                            gameState = 0;
+                                            gameState = 2;
                                             chapter1complete=1;
                                         }
 
@@ -942,6 +894,7 @@ int main( int argc, char* args[] )
                                     break;
 
                         }
+                        //if player presses 'h' to hide dialog box or not.
                         if(hideDialogBox == false){
                             dialogBox.render(0,400,NULL,0.0,NULL,SDL_FLIP_NONE,renderer);
 
@@ -952,37 +905,9 @@ int main( int argc, char* args[] )
                             {
                                 scriptTexture[currentPage][i].render(20,420 + (i*20),NULL,0.0,NULL,SDL_FLIP_NONE,renderer);
                             }
-                            /*
-                            switch(i){
-                                case 0:
-                                    scriptTexture[currentPage][i].render(20,420 + (i*20),NULL,0.0,NULL,SDL_FLIP_NONE,gRenderer);
-                                    break;
-                                case 1:
-                                    scriptTexture[currentPage][i].render(20,420 + (i*20),NULL,0.0,NULL,SDL_FLIP_NONE,gRenderer);
-                                    break;
-                                case 2:
-                                    scriptTexture[currentPage][i].render(20,420 + (i*20),NULL,0.0,NULL,SDL_FLIP_NONE,gRenderer);
-                                    break;
-                                case 3:
-                                    scriptTexture[currentPage][i].render(20,420 + (i*20),NULL,0.0,NULL,SDL_FLIP_NONE,gRenderer);
-                                    break;
-                                case 4:
-                                    scriptTexture[currentPage][i].render(20,420 + (i*20),NULL,0.0,NULL,SDL_FLIP_NONE,gRenderer);
-                                    break;
-                                case 5:
-                                    scriptTexture[currentPage][i].render(20,420 + (i*20),NULL,0.0,NULL,SDL_FLIP_NONE,gRenderer);
-                                    break;
-                                case 6:
-                                    scriptTexture[currentPage][i].render(20,420 + (i*20),NULL,0.0,NULL,SDL_FLIP_NONE,gRenderer);
-                                    break;
-                                case 7:
-                                    scriptTexture[currentPage][i].render(20,420 + (i*20),NULL,0.0,NULL,SDL_FLIP_NONE,gRenderer);
-                                    break;
-                            }*/
+
                         }
-                        /*
-                        if(chapter1Timer.getTicks() > 21000)
-                                        chapter1Timer.pause();*/
+
                     }
                     switch(aniFrame){
                     case 0:tao[0].render(750,350,NULL,0.0,NULL,SDL_FLIP_NONE,renderer);
@@ -1030,11 +955,14 @@ int main( int argc, char* args[] )
                 }
 
                 //set script line
-                if(chapter1Timer.getTicks()/1000 > 1){
+                if(chapter1Timer.getTicks()/1000 > 1){//implement timer auto script option.
                     if(currentScript<TOTAL_SCRIPTS-1){
                         currentScript++;
                         chapter1Timer.stop();
                         chapter1Timer.start();
+                        std::cout << "\n chapter1complete: " << std::to_string( chapter1complete );
+                        std::cout << "\n currentPage: " << std::to_string( currentPage );
+                        std::cout << "\n currentScript: " << std::to_string( currentScript );
                     }/*
                     else
                     {

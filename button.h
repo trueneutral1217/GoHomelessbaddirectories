@@ -22,7 +22,8 @@ class button
 		int handleEvent( int gameState, std::string buttonName, SDL_Event* e );
 
         Texture buttonTexture;
-
+        //if button is clicked
+        bool clicked;
 		//void render(texture gButtonTexture,SDL_Renderer* gRenderer);
 
 		std::string buttonName;

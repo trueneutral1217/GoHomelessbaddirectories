@@ -5,6 +5,7 @@ button::button()
 	mPosition.x = 0;
 	mPosition.y = 0;
     buttonName = "";
+    clicked = false;
     //buttonTexture = NULL;
 
 }
@@ -65,7 +66,7 @@ int button::handleEvent(int gameState, std::string buttonName, SDL_Event* e )
 		//Mouse is outside button
 		if( !inside )
 		{
-			//mCurrentSprite = BUTTON_SPRITE_MOUSE_OUT;
+
 		}
 		//Mouse is inside button
 		else
@@ -75,35 +76,46 @@ int button::handleEvent(int gameState, std::string buttonName, SDL_Event* e )
                 switch( e->type )
                 {
                     case SDL_MOUSEBUTTONDOWN:
+
                         if(buttonName=="new" && gameState==0){
                             printf("\n new game button pressed \n");
                             gameState = 1;
+                            clicked = true;
                         }
                         else if(buttonName=="load" && gameState==0){
-                                printf("\n load game button pressed \n");
+                            printf("\n load game button pressed \n");
                             gameState = 2; //Note, this will need to be changed once saving game implemented
+                            clicked = true;
                         }
                         else if(buttonName=="credits" && gameState==0){
                             printf("\n credits button pressed \n");
                             gameState = 4;
+                            clicked = true;
                         }
                         else if(buttonName=="options" && gameState==0){
                             printf("\n options button pressed \n");
                             gameState = 3;
+                            clicked = true;
                         }
-                        else if(buttonName=="back"){
+                        else if(buttonName=="back" && gameState != 0){
                             printf("\n back button pressed \n");
                             gameState = 0;
+                            clicked = true;
                         }
                         else if(buttonName=="chapter1" && gameState==1){
                             printf("\n chapter 1 button pressed \n");
                             gameState = 5;
+                            clicked = true;
                         }
                         else if(buttonName=="chapter1" && gameState==2){
                             printf("\n chapter 1 button pressed \n");
                             gameState = 5;
+                            clicked = true;
                         }
                     break;
+                    case SDL_MOUSEBUTTONUP:
+                        clicked = false;
+                        break;
                 }
 
 		}
